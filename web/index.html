@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0618" />
+    <title>KUKI DEX — swap, pool, earn</title>
+    <meta name="description" content="KUKI DEX on TON: swap KUKI and TON, provide liquidity, and follow the treasury." />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://unpkg.com/@tonconnect/ui@2.0.9/dist/tonconnect-ui.min.js"></script>
+  </head>
+  <body>
+    <div class="ambient a"></div>
+    <div class="ambient b"></div>
+
+    <header class="topbar">
+      <a class="brand" href="#swap">
+        <img src="assets/kuki-coin.webp" alt="KUKI" />
+        <span>KUKI <em>DEX</em></span>
+      </a>
+      <nav class="tabs" id="nav">
+        <a href="#swap" data-view="swap" class="on">Swap</a>
+        <a href="#liquidity" data-view="liquidity">Liquidity</a>
+        <a href="#tokens" data-view="tokens">Tokens</a>
+      </nav>
+      <div class="wallet" id="wallet-root"></div>
+    </header>
+
+    <main>
+      <section class="view on" id="view-swap">
+        <div class="hero">
+          <span class="chip"><i></i> live on TON</span>
+          <h1>Swap KUKI.<br /><span>Own the curve.</span></h1>
+          <p>One pool, two assets, zero middlemen. Quotes come straight from the contract.</p>
+          <img class="hero-coin" src="assets/kuki-coin.webp" alt="KUKI" />
+        </div>
+
+        <div class="swap-grid">
+          <div class="card swap">
+            <div class="card-top">
+              <h2>Swap</h2>
+              <span class="pill" id="rate-pill">KUKI / TON</span>
+            </div>
+
+            <div class="field">
+              <div class="field-head"><span>You pay</span><span id="bal-in">—</span></div>
+              <div class="field-body">
+                <input id="pay" inputmode="decimal" placeholder="0.0" value="1" />
+                <button class="token-btn" id="pay-token" data-side="ton">
+                  <img src="assets/ton.svg" alt="" /><span id="pay-sym">TON</span><i>▾</i>
+                </button>
+              </div>
+            </div>
+
+            <button class="flip" id="flip" aria-label="switch">⇅</button>
+
+            <div class="field">
+              <div class="field-head"><span>You receive</span><span id="bal-out">—</span></div>
+              <div class="field-body">
+                <input id="get" placeholder="0.0" readonly />
+                <button class="token-btn" id="get-token" data-side="kuki">
+                  <img src="assets/kuki-coin.webp" alt="" /><span id="get-sym">KUKI</span><i>▾</i>
+                </button>
+              </div>
+            </div>
+
+            <div class="meta">
+              <div><span>Rate</span><b id="rate">—</b></div>
+              <div><span>LP fee</span><b id="lp-fee">0.30%</b></div>
+              <div><span>Protocol fee</span><b id="pr-fee">0.10%</b></div>
+              <div><span>Min received</span><b id="min-out">—</b></div>
+            </div>
+
+            <button class="btn primary" id="swap" disabled>Connect wallet</button>
+            <p class="note" id="swap-note">Liquidity is thin while the pool bootstraps. Quotes update live.</p>
+          </div>
+
+          <div class="card chart-card">
+            <div class="card-top">
+              <h2>KUKI / TON</h2>
+              <div class="chips" id="tf">
+                <button data-tf="hour" class="on">1H</button>
+                <button data-tf="day">1D</button>
+                <button data-tf="week">1W</button>
+              </div>
+            </div>
+            <div class="price-row">
+              <b id="price">—</b>
+              <span id="change">—</span>
+            </div>
+            <canvas id="chart" height="220"></canvas>
+            <div class="chart-foot"><span>Source: GeckoTerminal · STON.fi KUKI/TON</span><span id="chart-time">—</span></div>
+          </div>
+        </div>
+
+        <div class="stats">
+          <div class="card stat"><span>Pool TVL</span><b id="tvl">—</b></div>
+          <div class="card stat"><span>KUKI reserve</span><b id="r-kuki">—</b></div>
+          <div class="card stat"><span>TON reserve</span><b id="r-ton">—</b></div>
+          <div class="card stat"><span>Protocol fees</span><b id="fees">—</b></div>
+        </div>
+
+        <div class="card bot-card">
+          <div class="bot-head">
+            <div><span>Arbitrage bot</span><b id="bot-mode">—</b></div>
+            <span class="pill" id="bot-state">offline</span>
+          </div>
+          <div class="bot-stats">
+            <div><span>Gap</span><b id="bot-gap">—</b></div>
+            <div><span>Net / trade</span><b id="bot-net">—</b></div>
+            <div><span>Last trade</span><b id="bot-trade">—</b></div>
+            <div><span>Updated</span><b id="bot-ts">—</b></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-liquidity">
+        <div class="hero small">
+          <span class="chip"><i></i> KUKI / TON</span>
+          <h1>Provide liquidity.</h1>
+          <p>Deposit both sides in proportion. LP shares are minted to your wallet, and 0.30% of every swap goes to LPs.</p>
+        </div>
+
+        <div class="liq-grid">
+          <div class="card">
+            <div class="card-top"><h2>Add liquidity</h2><span class="pill" id="liq-state">live</span></div>
+
+            <div class="field">
+              <div class="field-head"><span>KUKI</span><span id="pool-share">—</span></div>
+              <div class="field-body">
+                <input id="liq-kuki" inputmode="decimal" placeholder="0.0" />
+                <span class="token-static"><img src="assets/kuki-coin.webp" alt="" />KUKI</span>
+              </div>
+            </div>
+            <div class="plus">+</div>
+            <div class="field">
+              <div class="field-head"><span>TON</span><span id="ratio">—</span></div>
+              <div class="field-body">
+                <input id="liq-ton" inputmode="decimal" placeholder="0.0" />
+                <span class="token-static"><img src="assets/ton.svg" alt="" />TON</span>
+              </div>
+            </div>
+
+            <div class="meta">
+              <div><span>Pool ratio</span><b id="liq-ratio">—</b></div>
+              <div><span>LP shares</span><b id="liq-shares">—</b></div>
+              <div><span>Your position</span><b id="liq-position">—</b></div>
+              <div><span>Slippage</span><b>0.5%</b></div>
+            </div>
+
+            <button class="btn primary" id="add" disabled>Connect wallet</button>
+            <p class="note">Both transfers are sent in one wallet confirmation and paired by a nonce.</p>
+          </div>
+
+          <div class="card">
+            <div class="card-top"><h2>Pool</h2><span class="pill">KUKI / TON</span></div>
+            <div class="pair-big">
+              <span class="coins"><img src="assets/kuki-coin.webp" alt="" /><img src="assets/ton.svg" alt="" /></span>
+              <div><b>KUKI / TON</b><span>50 / 50 weighted</span></div>
+            </div>
+            <div class="meta vertical">
+              <div><span>KUKI reserve</span><b id="l-r-kuki">—</b></div>
+              <div><span>TON reserve</span><b id="l-r-ton">—</b></div>
+              <div><span>Total LP shares</span><b id="l-supply">—</b></div>
+              <div><span>Protocol fees</span><b id="l-fees">—</b></div>
+              <div><span>Treasury</span><code id="l-admin">—</code></div>
+            </div>
+            <div class="fee-flow">
+              <div><b>0.30%</b><span>to liquidity providers</span></div>
+              <div><b>0.10%</b><span>to the treasury</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-tokens">
+        <div class="hero small">
+          <span class="chip"><i></i> TON ecosystem</span>
+          <h1>Every token,<br /><span>one quote asset.</span></h1>
+          <p>KUKI is the base asset of the exchange. Browse jettons indexed by TonAPI; pools are created against KUKI.</p>
+        </div>
+
+        <div class="tokens-bar">
+          <input id="search" placeholder="Search by name or symbol" />
+          <span class="pill" id="token-count">—</span>
+        </div>
+        <div class="token-grid" id="token-grid"></div>
+      </section>
+    </main>
+
+    <nav class="dock" id="dock">
+      <a href="#swap" data-view="swap" class="on"><span>⇄</span>Swap</a>
+      <a href="#liquidity" data-view="liquidity"><span>◈</span>Pool</a>
+      <a href="#tokens" data-view="tokens"><span>◎</span>Tokens</a>
+    </nav>
+
+    <footer>
+      <span>KUKI DEX · TON</span>
+      <span class="muted">Contracts are unaudited. Swap at your own risk.</span>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

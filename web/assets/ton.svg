@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56" role="img" aria-label="TON">
+  <defs>
+    <linearGradient id="ton-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#33b3ff"/>
+      <stop offset="1" stop-color="#0098ea"/>
+    </linearGradient>
+  </defs>
+  <circle cx="28" cy="28" r="28" fill="url(#ton-bg)"/>
+  <path d="M13.4 19.6h29.2L28 44.6 13.4 19.6Z" fill="#ffffff"/>
+  <path d="M28 19.6v25" stroke="#0d8fdc" stroke-width="1.4" opacity="0.55"/>
+  <path d="M28 9.6 13.4 19.6H28V9.6Z" fill="#ffffff" opacity="0.55"/>
+  <path d="M28 9.6l14.6 10H28V9.6Z" fill="#ffffff" opacity="0.78"/>
+</svg>

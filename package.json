@@ -1,0 +1,33 @@
+{
+  "name": "@kuki/dex",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "KUKI DEX — Osmosis-classic weighted pools on TON, KUKI-quoted, plus the STON.fi <-> KUKI arbitrage bot",
+  "scripts": {
+    "build": "tact --config tact.config.json && tsc -p tsconfig.json",
+    "build:contracts": "tact --config tact.config.json",
+    "build:ts": "tsc -p tsconfig.json",
+    "test": "tact --config tact.config.json && tsc -p tsconfig.json && node dist/tests/pool.test.js && node dist/tests/ton-pool.test.js && node dist/bot/tests/math.test.js && node dist/bot/tests/stonfi.test.js && node dist/bot/tests/guard.test.js && node dist/bot/tests/messages.test.js",
+    "demo": "node dist/scripts/demo.js",
+    "bot": "node dist/bot/src/index.js",
+    "simulate": "node dist/bot/src/simulate.js",
+    "deploy": "node dist/scripts/deploy.js",
+    "seed": "node dist/scripts/seed.js",
+    "web": "node scripts/serve-web.mjs"
+  },
+  "devDependencies": {
+    "@tact-lang/compiler": "1.6.13",
+    "@ton/core": "^0.62.0",
+    "@ton/crypto": "^3.3.0",
+    "@ton/sandbox": "^0.33.0",
+    "@ton/test-utils": "^0.5.0",
+    "@ton/ton": "^15.0.0",
+    "@types/node": "^22.10.0",
+    "typescript": "5.9.3",
+    "zod": "3.25.76"
+  },
+  "dependencies": {
+    "@ston-fi/sdk": "2.7.0"
+  }
+}

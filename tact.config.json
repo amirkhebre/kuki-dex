@@ -1,0 +1,14 @@
+{
+  "projects": [
+    {
+      "name": "kuki-dex",
+      "path": "./contracts/KukiDex.tact",
+      "output": "./build"
+    },
+    {
+      "name": "kuki-dex-test",
+      "path": "./contracts/TestJetton.tact",
+      "output": "./build"
+    }
+  ]
+}
