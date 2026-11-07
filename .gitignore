@@ -7,3 +7,5 @@ build/
 .relayer.json
 .github-token
 .github-device.json
+.cf-token
+.cf-auth.json

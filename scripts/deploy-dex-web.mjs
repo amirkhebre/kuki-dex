@@ -30,6 +30,12 @@ function wranglerConfig() {
 
 async function accessToken() {
   if (process.env.CLOUDFLARE_API_TOKEN) return process.env.CLOUDFLARE_API_TOKEN.trim();
+  if (existsSync(".cf-token")) {
+    try {
+      const local = JSON.parse(readFileSync(".cf-token", "utf8"));
+      if (local.access_token && local.expires_at > Date.now() + 60_000) return local.access_token;
+    } catch {}
+  }
   const cfg = wranglerConfig();
   const exp = Date.parse(cfg.expires);
   if (cfg.token && (!Number.isFinite(exp) || exp > Date.now() + 60_000)) return cfg.token;

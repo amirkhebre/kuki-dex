@@ -1,0 +1,4 @@
+{
+  "url": "https://dash.cloudflare.com/oauth2/auth?response_type=code&client_id=54d11594-84e4-41aa-b438-e81b8fa78ee7&redirect_uri=http%3A%2F%2Flocalhost%3A8976%2Foauth%2Fcallback&scope=user%3Aread+account%3Aread+workers%3Awrite+workers_kv%3Awrite+workers_scripts%3Awrite+offline_access&state=5o_FWFdMVr-szzvfpUN6pw&code_challenge=kKYn2hswyVt0fAIC-zlIqXdY1n4nuXSUZRrA-ixOgnQ&code_challenge_method=S256",
+  "created_at": 1794073927643
+}
